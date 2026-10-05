@@ -34,6 +34,7 @@ function AppNavigator() {
         <Stack.Screen name="plot/[id]/index" options={{ title: 'Lote' }} />
         <Stack.Screen name="plot/[id]/command" options={{ title: 'Confirmar comando' }} />
         <Stack.Screen name="plot/[id]/history" options={{ title: 'Historial de comandos' }} />
+        <Stack.Screen name="diagnostics" options={{ title: 'Diagnóstico' }} />
       </Stack>
     </PlotsProvider>
   );

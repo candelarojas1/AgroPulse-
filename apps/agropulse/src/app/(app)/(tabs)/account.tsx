@@ -1,4 +1,5 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 import { Colors } from '@/constants/colors';
@@ -6,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { ROLE_LABELS, useOrg } from '@/context/OrgContext';
 
 export default function AccountScreen() {
+  const router = useRouter();
   const { session, signOut } = useAuth();
   const { memberships, activeOrg, role, selectOrg } = useOrg();
 
@@ -47,6 +49,11 @@ export default function AccountScreen() {
           );
         })}
       </View>
+
+      <Pressable style={styles.linkButton} onPress={() => router.push('/diagnostics')}>
+        <Ionicons name="pulse-outline" size={20} color={Colors.primary} />
+        <Text style={styles.linkText}>Diagnóstico</Text>
+      </Pressable>
 
       <Pressable style={styles.logoutButton} onPress={signOut}>
         <Ionicons name="log-out-outline" size={20} color={Colors.error} />
@@ -96,6 +103,20 @@ const styles = StyleSheet.create({
   orgMeta: {
     fontSize: 13,
     color: Colors.textMuted,
+  },
+  linkButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: Colors.surface,
+    borderRadius: 12,
+    padding: 14,
+  },
+  linkText: {
+    color: Colors.primary,
+    fontSize: 16,
+    fontWeight: '600',
   },
   logoutButton: {
     flexDirection: 'row',
