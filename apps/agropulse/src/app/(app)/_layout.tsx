@@ -31,7 +31,9 @@ function AppNavigator() {
     <PlotsProvider>
       <Stack screenOptions={{ headerTintColor: Colors.primary, headerBackButtonDisplayMode: 'minimal' }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="plot/[id]" options={{ title: 'Lote' }} />
+        <Stack.Screen name="plot/[id]/index" options={{ title: 'Lote' }} />
+        <Stack.Screen name="plot/[id]/command" options={{ title: 'Confirmar comando' }} />
+        <Stack.Screen name="plot/[id]/history" options={{ title: 'Historial de comandos' }} />
       </Stack>
     </PlotsProvider>
   );

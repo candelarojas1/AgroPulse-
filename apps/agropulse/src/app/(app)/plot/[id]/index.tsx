@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 import { MoistureChart, type ChartPoint } from '@/components/MoistureChart';
@@ -26,6 +26,7 @@ import { supabase } from '@/lib/supabase';
 type Valve = { id: string; name: string; status: 'open' | 'closed' };
 
 export default function PlotDetailScreen() {
+  const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { plots, reload: reloadPlots, updatePlot } = usePlots();
   const { role } = useOrg();
@@ -103,6 +104,9 @@ export default function PlotDetailScreen() {
 
   // Umbral mínimo (RF-11): solo el productor lo edita; RLS lo exige igual en la base.
   const canEditThreshold = role === 'producer';
+  // Comandos: productor y operador. Al asesor se le deshabilita el botón (H2); si igual
+  // intentara, la política RLS de la base lo rechaza.
+  const canCommand = role === 'producer' || role === 'operator';
   const thresholdText = thresholdDraft ?? String(plot.threshold_min);
 
   const saveThreshold = async () => {
@@ -234,8 +238,28 @@ export default function PlotDetailScreen() {
               <Text style={[styles.valveStatus, valve.status === 'open' && styles.valveOpen]}>
                 {valve.status === 'open' ? 'Abierta' : 'Cerrada'}
               </Text>
+              <Pressable
+                style={[styles.irrigateButton, !canCommand && styles.disabled]}
+                disabled={!canCommand}
+                onPress={() =>
+                  router.push({
+                    pathname: '/plot/[id]/command',
+                    params: { id: plot.id, valveId: valve.id, valveName: valve.name },
+                  })
+                }
+              >
+                <Text style={styles.irrigateText}>Regar</Text>
+              </Pressable>
             </View>
           ))}
+          {!canCommand && <Text style={styles.muted}>Tu rol (asesor) no permite comandar válvulas.</Text>}
+          <Pressable
+            style={styles.historyLink}
+            onPress={() => router.push({ pathname: '/plot/[id]/history', params: { id: plot.id } })}
+          >
+            <Ionicons name="time-outline" size={18} color={Colors.primary} />
+            <Text style={styles.historyText}>Historial de comandos</Text>
+          </Pressable>
         </View>
       </ScrollView>
     </>
@@ -359,6 +383,28 @@ const styles = StyleSheet.create({
   },
   valveOpen: {
     color: '#1565C0',
+    fontWeight: '600',
+  },
+  irrigateButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginLeft: 8,
+  },
+  irrigateText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  historyLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingTop: 8,
+  },
+  historyText: {
+    color: Colors.primary,
+    fontSize: 15,
     fontWeight: '600',
   },
 });

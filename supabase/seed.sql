@@ -8,7 +8,7 @@
 
 insert into public.organizations (id, name, region) values
   ('11111111-1111-1111-1111-111111111111', 'Estancia Didáctica Concordia', 'Concordia, Entre Ríos'),
-  ('22222222-2222-2222-2222-222222222222', 'Campo Demo Federal', 'Federal, Entre Ríos')
+  ('22222222-2222-2222-2222-222222222222', 'Paraje Demo Federal', 'Federal, Entre Ríos')
 on conflict (id) do nothing;
 
 -- Borra en cascada estaciones, lecturas, válvulas y comandos.

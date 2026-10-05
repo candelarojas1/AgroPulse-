@@ -11,15 +11,15 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !TEST_USERS_PASSWORD) {
 }
 
 const ESTANCIA = '11111111-1111-1111-1111-111111111111';
-const CAMPO_DEMO = '22222222-2222-2222-2222-222222222222';
+const PARAJE_DEMO = '22222222-2222-2222-2222-222222222222';
 
 const USERS = [
   // El productor pertenece a dos establecimientos para mostrar el selector (RF-03).
-  { email: 'productor@agropulse.test', memberships: [[ESTANCIA, 'producer'], [CAMPO_DEMO, 'producer']] },
+  { email: 'productor@agropulse.test', memberships: [[ESTANCIA, 'producer'], [PARAJE_DEMO, 'producer']] },
   { email: 'operador@agropulse.test', memberships: [[ESTANCIA, 'operator']] },
   { email: 'asesor@agropulse.test', memberships: [[ESTANCIA, 'advisor']] },
   // Usuario de otro establecimiento: no debe ver los lotes de la Estancia (RF-02).
-  { email: 'otro@agropulse.test', memberships: [[CAMPO_DEMO, 'producer']] },
+  { email: 'otro@agropulse.test', memberships: [[PARAJE_DEMO, 'producer']] },
 ];
 
 const headers = {
