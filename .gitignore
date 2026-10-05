@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+
+# variables de entorno (claves de Supabase y contraseñas de prueba)
+.env
+.env*.local
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# macOS
+.DS_Store
+
+# typescript
+*.tsbuildinfo
+
+# configuración del editor y de asistentes de IA
+.vscode/
+.claude/
+AGENTS.md
+CLAUDE.md
