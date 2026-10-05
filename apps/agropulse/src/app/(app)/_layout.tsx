@@ -1,8 +1,10 @@
 import { Stack } from 'expo-router';
 
 import { StateView } from '@/components/StateView';
-import { OrgProvider, useOrg } from '@/context/OrgContext';
 import { useAuth } from '@/context/AuthContext';
+import { OrgProvider, useOrg } from '@/context/OrgContext';
+import { PlotsProvider } from '@/context/PlotsContext';
+import { Colors } from '@/constants/colors';
 import { getErrorMessage } from '@/lib/errors';
 
 function AppNavigator() {
@@ -25,7 +27,14 @@ function AppNavigator() {
     );
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <PlotsProvider>
+      <Stack screenOptions={{ headerTintColor: Colors.primary, headerBackButtonDisplayMode: 'minimal' }}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="plot/[id]" options={{ title: 'Lote' }} />
+      </Stack>
+    </PlotsProvider>
+  );
 }
 
 export default function AppLayout() {

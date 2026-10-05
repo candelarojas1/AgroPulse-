@@ -1,50 +1,19 @@
-import { useEffect, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 import { StateView } from '@/components/StateView';
+import { StatusBadge } from '@/components/StatusBadge';
 import { Colors } from '@/constants/colors';
-import { useOrg } from '@/context/OrgContext';
+import { usePlots } from '@/context/PlotsContext';
 import { getErrorMessage } from '@/lib/errors';
-import { supabase } from '@/lib/supabase';
 
-type PlotRow = { id: string; name: string; crop: string | null };
-
-// Lista mínima de lotes del establecimiento activo. El semáforo se agrega en la etapa 4.
+// Lista de lotes del establecimiento activo con su semáforo (RF-04).
 export default function PlotsScreen() {
-  const { activeOrg } = useOrg();
-  const [plots, setPlots] = useState<PlotRow[]>([]);
-  // Para qué establecimiento son los datos cargados: si cambia el activo, vuelve a "cargando".
-  const [loadedOrgId, setLoadedOrgId] = useState<string | null>(null);
-  const [error, setError] = useState<unknown>(null);
-  const [reloadKey, setReloadKey] = useState(0);
+  const router = useRouter();
+  const { plots, isLoading, error, reload } = usePlots();
 
-  useEffect(() => {
-    if (!activeOrg) return;
-    let cancelled = false;
-    supabase
-      .from('plots')
-      .select('id, name, crop')
-      .eq('organization_id', activeOrg.id)
-      .order('name')
-      .then(({ data, error: queryError }) => {
-        if (cancelled) return;
-        if (queryError) {
-          setError(queryError);
-        } else {
-          setPlots(data);
-          setError(null);
-        }
-        setLoadedOrgId(activeOrg.id);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [activeOrg, reloadKey]);
-
-  const reload = () => setReloadKey((key) => key + 1);
-  const isLoading = loadedOrgId !== activeOrg?.id;
-
-  if (isLoading) return <StateView loading />;
+  if (isLoading) return <StateView loading message="Cargando lotes…" />;
   if (error) return <StateView message={getErrorMessage(error)} actionLabel="Reintentar" onAction={reload} />;
   if (plots.length === 0) return <StateView message="Este establecimiento todavía no tiene lotes." />;
 
@@ -55,10 +24,20 @@ export default function PlotsScreen() {
       keyExtractor={(plot) => plot.id}
       refreshControl={<RefreshControl refreshing={false} onRefresh={reload} />}
       renderItem={({ item }) => (
-        <View style={styles.row}>
-          <Text style={styles.name}>{item.name}</Text>
-          {item.crop && <Text style={styles.crop}>{item.crop}</Text>}
-        </View>
+        <Pressable
+          style={styles.row}
+          onPress={() => router.push({ pathname: '/plot/[id]', params: { id: item.id } })}
+        >
+          <View style={styles.info}>
+            <Text style={styles.name}>{item.name}</Text>
+            <Text style={styles.meta}>
+              {item.crop ?? 'Sin cultivo'}
+              {item.moisture_pct !== null && ` · humedad ${item.moisture_pct}%`}
+            </Text>
+          </View>
+          <StatusBadge status={item.status} />
+          <Ionicons name="chevron-forward" size={18} color={Colors.textMuted} />
+        </Pressable>
       )}
     />
   );
@@ -70,17 +49,23 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
     backgroundColor: Colors.surface,
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: Colors.border,
   },
+  info: {
+    flex: 1,
+  },
   name: {
     fontSize: 16,
     color: Colors.text,
   },
-  crop: {
+  meta: {
     fontSize: 13,
     color: Colors.textMuted,
   },
