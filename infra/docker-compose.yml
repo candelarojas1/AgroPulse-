@@ -1,0 +1,48 @@
+# Backend de eventos de AgroPulse: Redpanda (Kafka) + simulador + worker.
+# Supabase está en la nube; la app móvil nunca se conecta a Redpanda.
+#
+# Uso (desde la raíz del repo):
+#   docker compose -f infra/docker-compose.yml up --build
+#   docker compose -f infra/docker-compose.yml logs -f simulator worker
+#
+# Variables opcionales (se pasan antes del comando):
+#   DURATION_MINUTE_SECONDS=5   acelera el cierre automático para la demo (default 60)
+#   SIM_PAUSED_STATIONS=""      lotes sin ticks (default "Monte A", para la demo stale)
+
+services:
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v26.2.3
+    command:
+      - redpanda
+      - start
+      - --mode=dev-container
+      - --smp=1
+      - --kafka-addr=internal://0.0.0.0:9092
+      - --advertise-kafka-addr=internal://redpanda:9092
+    healthcheck:
+      test: ["CMD", "rpk", "cluster", "health", "--exit-when-healthy"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+
+  # El simulador no recibe credenciales de Supabase: solo habla con Kafka.
+  simulator:
+    build: ../services/worker
+    command: ["node", "src/simulator.ts"]
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+      SIM_PAUSED_STATIONS: ${SIM_PAUSED_STATIONS-Monte A}
+    depends_on:
+      redpanda:
+        condition: service_healthy
+
+  worker:
+    build: ../services/worker
+    command: ["node", "src/worker.ts"]
+    env_file: ../.env
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+      DURATION_MINUTE_SECONDS: ${DURATION_MINUTE_SECONDS:-60}
+    depends_on:
+      redpanda:
+        condition: service_healthy

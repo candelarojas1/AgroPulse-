@@ -4,7 +4,7 @@
 --
 -- Se puede volver a ejecutar para resetear la demo: borra y recrea lotes, estaciones,
 -- lecturas, válvulas y comandos. Las organizaciones y las membresías se mantienen.
--- Los UUID son fijos porque el simulador los usa (infra/stations.json).
+-- Los UUID son fijos porque el simulador los usa (services/worker/src/stations.ts).
 
 insert into public.organizations (id, name, region) values
   ('11111111-1111-1111-1111-111111111111', 'Estancia Didáctica Concordia', 'Concordia, Entre Ríos'),

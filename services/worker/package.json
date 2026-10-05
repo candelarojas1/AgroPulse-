@@ -1,0 +1,23 @@
+{
+  "name": "agropulse-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Simulador de sensores y worker Kafka → Supabase de AgroPulse",
+  "scripts": {
+    "simulator": "node src/simulator.ts",
+    "worker": "node src/worker.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.109.0",
+    "kafkajs": "^2.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.1",
+    "typescript": "^7.0.2"
+  }
+}
