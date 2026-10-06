@@ -4,23 +4,6 @@ App móvil en **React Native (Expo + TypeScript + Expo Router)** para agricultur
 
 > ⚠️ **Datos ficticios.** Las lecturas de humedad, temperatura y lluvia son simuladas y no están calibradas a un sensor real. Las coordenadas de los lotes son aproximadas a la zona de Concordia y Federal (Entre Ríos) y no corresponden a un predio real. No es un sistema productivo de campo.
 
-<p align="center">
-  <img src="docs/img/01-mapa.jpg" width="220" alt="Mapa con semáforo" />
-  <img src="docs/img/02-detalle-seco.jpg" width="220" alt="Detalle del lote" />
-  <img src="docs/img/03-confirmar-comando.jpg" width="220" alt="Confirmar comando" />
-</p>
-
----
-
-## 🧱 Arquitectura
-
-```
- [App Expo] ──JWT / REST──▶ [Supabase: Auth · Postgres + RLS · Realtime] ◀── service role ── [Worker]
-     ▲                                   │                                              ▲    │
-     └───────── Realtime (cambios) ──────┘                                              │    ▼
-                                              [Simulador] ── ticks ──▶ [Redpanda] ──────┘
-```
-
 | Componente | Responsabilidad |
 |---|---|
 | App (`apps/agropulse`) | UI, GPS, comandos. Usa solo la anon key + RLS. Nunca habla con Kafka. |
@@ -29,7 +12,7 @@ App móvil en **React Native (Expo + TypeScript + Expo Router)** para agricultur
 | Simulador (`services/worker/src/simulator.ts`) | Hace de sensor: publica ticks cada 3–8 s por estación. No tiene credenciales de Supabase. |
 | Worker (`services/worker/src/worker.ts`) | Traduce eventos → SQL con la service role: guarda lecturas y aplica comandos. |
 
-El detalle de las decisiones está en el [informe](docs/informe.md) y el cumplimiento de requisitos en el [checklist](docs/checklist-prd.md).
+El detalle de las decisiones está en el [informe](docs/informe.md), el cumplimiento de requisitos en el [checklist](docs/checklist-prd.md).
 
 ## 🗂️ Estructura
 
@@ -138,18 +121,3 @@ Todos usan la contraseña definida en `TEST_USERS_PASSWORD`.
 | `asesor@agropulse.test` | Asesor | Estancia | H2: ve todo, no puede regar |
 | `otro@agropulse.test` | Productor | Paraje Demo Federal | Aislamiento: no ve los lotes de la Estancia |
 
-## 🎬 Guía de demo
-
-- **H1 — Riego:** entrar como productor → Costa 2 está en rojo → *Regar* → *Abrir por 30 minutos* → *Enviar*. En ≤ 5 s el comando pasa a *Aplicado* y la válvula a *Abierta*; la humedad sube y el lote cambia de color.
-- **H2 — Asesor:** entrar como asesor → el botón *Regar* está deshabilitado. Si se fuerza un insert, RLS lo rechaza (403).
-- **RF-16 — Un solo pendiente:** frenar el worker (`docker compose -f infra/docker-compose.yml stop worker`), mandar un comando (queda pendiente y a los 10 s aparece *"Sin confirmación"*), mandar otro → *"Ya hay un comando pendiente para esta válvula"*. Al levantar el worker, el pendiente se aplica.
-- **H4 — Sensor caído:** Monte A arranca pausado y se ve gris (*Sin datos*), no rojo.
-- **"Estoy en el lote":** en el simulador de iOS, *Features → Location → Custom Location* con `-31.3280, -58.1215` (centro de Costa 2) y tocar el botón de ubicación del mapa.
-- **Diagnóstico:** *Cuenta → Diagnóstico* muestra el último tick recibido y el lag aparente.
-
-**Resetear la demo:** volver a ejecutar `supabase/seed.sql` en el SQL Editor (no borra usuarios).
-
-## 🛠️ Problemas comunes
-
-- **Los lotes aparecen en gris:** el simulador no está corriendo o se frenó hace más de 15 min. Levantar el backend (paso 5).
-- **El primer comando tarda tras reiniciar el worker de golpe:** si el contenedor se cortó sin apagarse bien, Kafka espera ~30–60 s antes de reasignar los mensajes. Con `docker compose stop` no pasa.
