@@ -43,14 +43,3 @@
 | H2 — El asesor no puede regar | Sí |
 | H3 — Carga manual sin conexión (opcional) | No |
 | H4 — Un sensor caído se ve como "sin datos" | Sí |
-
-## Entregables
-
-| Entregable | Estado |
-|---|---|
-| App | Sí |
-| Base de datos con permisos y datos de prueba | Sí |
-| docker-compose | Sí |
-| Informe | Sí |
-| Video o defensa | Pendiente |
-| Checklist del PRD | Sí |
