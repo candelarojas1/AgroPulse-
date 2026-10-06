@@ -62,6 +62,12 @@ El productor ve Costa 2 en rojo, entra al detalle, manda a regar 30 minutos y la
 |---|---|---|---|
 | ![Mapa](img/01-mapa.jpg) | ![Detalle](img/02-detalle-seco.jpg) | ![Confirmar](img/03-confirmar-comando.jpg) | ![Válvula abierta](img/04-valvula-abierta.jpg) |
 
-## 8. Pendiente
+## 8. Datos en vivo
+
+La pantalla Diagnóstico muestra la última lectura recibida y cuánto tardó en llegar a la app: menos de 1 segundo desde que el sensor la midió.
+
+<img src="img/05-diagnostico.jpg" width="220" alt="Pantalla Diagnóstico" />
+
+## 9. Pendiente
 
 No se implementaron la carga manual sin conexión ni las alertas (son opcionales en el PRD).
