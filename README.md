@@ -1,6 +1,5 @@
 # AgroPulse — Riego de precisión (demo)
-
-App móvil en **React Native (Expo + TypeScript + Expo Router)** para agricultura de precisión: lotes en un mapa con semáforo de humedad, detalle con lecturas y gráfico de 6 h, y comandos de riego con acuse. Backend en **Supabase** (Auth, Postgres con RLS, Realtime) y telemetría simulada que viaja por **Redpanda (Kafka)** solo del lado del backend: la app nunca se conecta al broker.
+Aplicación móvil en **React Native (Expo + TypeScript + Expo Router)** para agricultura de precisión. Muestra los lotes en un mapa con semáforo de humedad, el detalle de cada lote con su última lectura y un gráfico de 6 h, y permite ordenar riegos con acuse del comando. El backend está en Supabase (Auth, Postgres con RLS, Realtime) y los sensores son simulados: la telemetría viaja por Redpanda (Kafka) solo del lado del backend, y la app nunca se conecta al broker.
 
 > ⚠️ **Datos ficticios.** Las lecturas de humedad, temperatura y lluvia son simuladas y no están calibradas a un sensor real. Las coordenadas de los lotes son aproximadas a la zona de Concordia y Federal (Entre Ríos) y no corresponden a un predio real. No es un sistema productivo de campo.
 
